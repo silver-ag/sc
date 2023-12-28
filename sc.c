@@ -123,11 +123,16 @@ void chant_sigil(char* sigil, char* kind) {
     stack_chant(sigil);
   } else if (strcmp(kind, "stdout") == 0) {
     // - stdout chant -
-    // the stdout chant works by writing the sigil repeatedly to stdout
-    // this chant ends when the user cancels it or kills the program
-    // you can pipe this into aplay to make an audio output chant instead
     while (1) {
       printf("%s", sigil);
+    }
+  } else if (strcmp(kind, "stderr") == 0) {
+    // - stderr chant -
+    // the stdout chant works by writing the sigil repeatedly to stderr
+    // this chant ends when the user cancels it or kills the program
+    // the utility of this chant is to pipe the chant output on to another process while retaining the ability to interact with the sc interface
+    while (1) {
+      fprintf(stderr, "%s", sigil);
     }
   } else if (strncmp(kind, "disk", 4) == 0) {
     // - disk chant -
@@ -211,7 +216,8 @@ void print_help(char* topic) {
     printf("the following kinds of chant are provided:\n");
     printf("heap\t: the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out\n");
     printf("stack\t: the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out\n");
-    printf("stdout\t: the sigil is written to stdout until the program is cancelled. this can be piped to aplay for an audio chant too.\n");
+    printf("stdout\t: the sigil is written to stdout until the program is cancelled.\n");
+    printf("stderr\t: the sigil is written to stderr instead. if stderr is piped onwards, eg to aplay, you can still use the sc interface.\n");
     printf("disk <path>\t: takes a block device as an argument, to which the sigil is written until space runs out.\n");
     printf("net <addr>\t: takes an ip address as an argument, to which the sigil is sent as a stream of udp packets on port 888.\n");
   } else {
