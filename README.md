@@ -5,7 +5,7 @@ this is an attempt to make the computer do magic itself.
 a computer sigil is not an image file depicting a sigil. computers don't know what an image is.
 a computer sigil is the only thing a computer understands: a binary string, partitioned into bytes.
 
-### process
+## process
 
 SC keeps track of one current working sigil. these sigils are generated from text strings (future versions may allow other sources).
 the sigilisation process works by laying out the bytes of the input in a square, then XNORing the rows of the square together (future versions may allow other algorithms).
@@ -19,6 +19,7 @@ you can also view the sigil as a set of geomantic signs, two per byte.
 
 commands
 
+| --- | --- |
 | sigil | report the current sigil |
 | sigil <phrase> | sigilise the given string and set the current sigil accordingly |
 | chant <type> | chant a sigil in the given manner |
