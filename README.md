@@ -20,18 +20,18 @@ you can also view the sigil as a set of geomantic signs, two per byte.
 | command | description |
 | --- | --- |
 | sigil | report the current sigil |
-| sigil <phrase> | sigilise the given string and set the current sigil accordingly |
-| chant <type> | chant a sigil in the given manner |
+| sigil [phrase] | sigilise the given string and set the current sigil accordingly |
+| chant [type] | chant a sigil in the given manner |
 | geomantic | interpret the current sigil as a series of four-bit geomantic symbols |
 | end | close sc |
 | help | print this text |
-| help <command> | give more in-depth help about a specific option |
+| help [command] | give more in-depth help about a specific option |
 
 | chant | description |
 | --- | --- |
 | heap | the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out |
 | stack | the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out |
 | stdout | the sigil is written to stdout until the program is cancelled. this can be piped to aplay for an audio chant too. |
-| disk <path> | takes a block device as an argument, to which the sigil is written until space runs out. |
-| net <addr> | takes an ip address as an argument, to which the sigil is sent as a stream of udp packets on port 888. |
+| disk [path] | takes a block device as an argument, to which the sigil is written until space runs out. |
+| net [addr] | takes an ip address as an argument, to which the sigil is sent as a stream of udp packets on port 888. |
 
