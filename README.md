@@ -17,8 +17,7 @@ you can also view the sigil as a set of geomantic signs, two per byte.
 
 ## command reference
 
-commands
-
+| command | description |
 | --- | --- |
 | sigil | report the current sigil |
 | sigil <phrase> | sigilise the given string and set the current sigil accordingly |
@@ -28,8 +27,8 @@ commands
 | help | print this text |
 | help <command> | give more in-depth help about a specific option |
 
-chants
-
+| chant | description |
+| --- | --- |
 | heap | the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out |
 | stack | the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out |
 | stdout | the sigil is written to stdout until the program is cancelled. this can be piped to aplay for an audio chant too. |
