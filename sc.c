@@ -123,6 +123,8 @@ void chant_sigil(char* sigil, char* kind) {
     stack_chant(sigil);
   } else if (strcmp(kind, "stdout") == 0) {
     // - stdout chant -
+    // the stdout chant works by writing the sigil repeatedly to stdout
+    // this chant ends when the user cancels it or kills the program
     while (1) {
       printf("%s", sigil);
     }
