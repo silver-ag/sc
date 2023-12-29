@@ -14,15 +14,18 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <signal.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+#else
+  #include <sys/socket.h>
+  #include <arpa/inet.h>
+  #include <netinet/in.h>
+#endif
 
 int interrupt_handler(int v);
 int loop();
 char* make_sigil(char* phrase);
-void chant_sigil(char* sigil, char* kind);
+int chant_sigil(char* sigil, char* kind);
 void stack_chant(char* sigil);
 void geomantic_signs(char* sigil);
 int get_nth_bit(char character, int n);
@@ -104,7 +107,7 @@ char* make_sigil(char* phrase) {
   return result;
 }
 
-void chant_sigil(char* sigil, char* kind) {
+int chant_sigil(char* sigil, char* kind) {
   // chanting consists of meditating on a sigil by repeatedly processing it
 
   if (strcmp(kind, "heap") == 0) {
@@ -186,24 +189,32 @@ void chant_sigil(char* sigil, char* kind) {
       } else if (try_bind < 0) {
         printf("could not bind socket (do you have the right permissions?)\n");
       } else {
-        int try_nonblock = fcntl(in_sockfd, F_SETFL, fcntl(in_sockfd, F_GETFL, 0) | O_NONBLOCK);
-        if (try_nonblock < 0) {
-          printf("could not set socket to nonblocking\n");
-        } else {
-          char inbuffer[100];
-          int servlen = sizeof(servaddr);
-          while (1) {
-            sendto(out_sockfd, sigil, strlen(sigil), 0, (const struct sockaddr *) &clientaddr, sizeof(clientaddr));
-            int n = recvfrom(in_sockfd, inbuffer, 100, MSG_DONTWAIT, (struct sockaddr*)&servaddr, &servlen);
-            if (n > 0) {
-              inbuffer[n] = '\0';
-              sendto(out_sockfd, inbuffer, n, 0, (struct sockaddr*)&clientaddr, sizeof(clientaddr));
-            }
+        #ifdef _WIN32
+          u_long mode = 1;  // 1 to enable non-blocking socket
+          int try_nonblock = ioctlsocket(in_sockfd, FIONBIO, &mode);
+          if (try_nonblock != 0) {
+            printf("could not set socket to nonblocking\n");
+            return -1;
+          }
+        #else
+          int try_nonblock = fcntl(in_sockfd, F_SETFL, fcntl(in_sockfd, F_GETFL, 0) | O_NONBLOCK);
+          if (try_nonblock < 0) {
+            printf("could not set socket to nonblocking\n");
+            return -1;
+          }
+        #endif
+        char inbuffer[100];
+        int servlen = sizeof(servaddr);
+        while (1) {
+          sendto(out_sockfd, sigil, strlen(sigil), 0, (const struct sockaddr *) &clientaddr, sizeof(clientaddr));
+          int n = recvfrom(in_sockfd, inbuffer, 100, 0, (struct sockaddr*)&servaddr, &servlen);
+          if (n > 0) {
+            inbuffer[n] = '\0';
+            sendto(out_sockfd, inbuffer, n, 0, (struct sockaddr*)&clientaddr, sizeof(clientaddr));
           }
         }
       }
     }
-
   } else if (strncmp(kind, "net", 3) == 0) {
     // - net chant -
     // the net chant works by sending the sigil repeatedly in udp packets to the specified address
@@ -225,13 +236,14 @@ void chant_sigil(char* sigil, char* kind) {
         printf("could not connect socket (is %s a valid ip address?)\n", ipaddr);
       } else {
         while (1) {
-          sendto(sockfd, (const char *)sigil, strlen(sigil), MSG_CONFIRM, (const struct sockaddr *) &servaddr, sizeof(servaddr));
+          sendto(sockfd, (const char *)sigil, strlen(sigil), 0, (const struct sockaddr *) &servaddr, sizeof(servaddr));
         }
       }
     }
   } else {
     printf("chant type not recognised: %s\n", kind);
   }
+  return 0;
 }
 
 void stack_chant(char* sigil) {
