@@ -156,22 +156,73 @@ void chant_sigil(char* sigil, char* kind) {
         printf("chant aborted\n");
       }
     }
+  } else if (strncmp(kind, "netrepeat", 9) == 0) {
+    // - net repeater chant -
+    // the net repeater chant works like the net chant below, but it also listens on port 888 udp.
+    // if it receives any packets it forwards them on to the target as well.
+    // this can be used to construct feedback loops, accelerator chains, or more complex webs where each participant adds their own sigil to the stream
+    char ipaddr[20];
+    int port_out, port_in;
+    sscanf(kind + 10, "%d %[0-9.]:%d", &port_in, ipaddr, &port_out);
+    struct sockaddr_in servaddr;
+    struct sockaddr_in clientaddr;
+    int in_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    int out_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (in_sockfd < 0 || out_sockfd < 0) {
+      printf("could not open socket\n");
+    } else {
+      memset(&servaddr, 0, sizeof(servaddr));
+      servaddr.sin_family = AF_INET; // IPv4
+      servaddr.sin_addr.s_addr = INADDR_ANY;
+      servaddr.sin_port = htons(port_in);
+      memset(&clientaddr, 0, sizeof(servaddr));
+      clientaddr.sin_family = AF_INET; // IPv4
+      clientaddr.sin_addr.s_addr = inet_addr(ipaddr);
+      clientaddr.sin_port = htons(port_out);
+      int try_connect = connect(out_sockfd, (struct sockaddr *)&clientaddr, sizeof(clientaddr));
+      int try_bind = bind(in_sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
+      if (try_connect < 0) {
+        printf("could not connect socket (is %s a valid ip address?)\n", ipaddr);
+      } else if (try_bind < 0) {
+        printf("could not bind socket (do you have the right permissions?)\n");
+      } else {
+        int try_nonblock = fcntl(in_sockfd, F_SETFL, fcntl(in_sockfd, F_GETFL, 0) | O_NONBLOCK);
+        if (try_nonblock < 0) {
+          printf("could not set socket to nonblocking\n");
+        } else {
+          char inbuffer[100];
+          int servlen = sizeof(servaddr);
+          while (1) {
+            sendto(out_sockfd, sigil, strlen(sigil), 0, (const struct sockaddr *) &clientaddr, sizeof(clientaddr));
+            int n = recvfrom(in_sockfd, inbuffer, 100, MSG_DONTWAIT, (struct sockaddr*)&servaddr, &servlen);
+            if (n > 0) {
+              inbuffer[n] = '\0';
+              sendto(out_sockfd, inbuffer, n, 0, (struct sockaddr*)&clientaddr, sizeof(clientaddr));
+            }
+          }
+        }
+      }
+    }
+
   } else if (strncmp(kind, "net", 3) == 0) {
     // - net chant -
     // the net chant works by sending the sigil repeatedly in udp packets to the specified address
     // this chant ends when the user cancels it or kills the program
     struct sockaddr_in servaddr;
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    char ipaddr[20];
+    int port;
+    sscanf(kind + 4, "%[0-9.]:%d", ipaddr, &port);
     if (sockfd < 0) {
       printf("could not open socket\n");
     } else {
       memset(&servaddr, 0, sizeof(servaddr));
       servaddr.sin_family = AF_INET; // IPv4
-      servaddr.sin_addr.s_addr = inet_addr(kind + 4);
-      servaddr.sin_port = htons(888); // use port 888
+      servaddr.sin_addr.s_addr = inet_addr(ipaddr);
+      servaddr.sin_port = htons(port); // use port 888
       int try_connect = connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
       if (try_connect < 0) {
-        printf("could not connect socket (is %s a valid ip address?)", kind + 4);
+        printf("could not connect socket (is %s a valid ip address?)\n", ipaddr);
       } else {
         while (1) {
           sendto(sockfd, (const char *)sigil, strlen(sigil), MSG_CONFIRM, (const struct sockaddr *) &servaddr, sizeof(servaddr));
@@ -216,12 +267,16 @@ void print_help(char* topic) {
     printf("- chant -\n");
     printf("chanting consists of the computer meditating on a sigil by repeatedly processing it.\n");
     printf("the following kinds of chant are provided:\n");
-    printf("heap\t: the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out\n");
-    printf("stack\t: the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out\n");
-    printf("stdout\t: the sigil is written to stdout until the program is cancelled.\n");
-    printf("stderr\t: the sigil is written to stderr instead. if stderr is piped onwards, eg to aplay, you can still use the sc interface.\n");
-    printf("disk <path>\t: takes a block device as an argument, to which the sigil is written until space runs out.\n");
-    printf("net <addr>\t: takes an ip address as an argument, to which the sigil is sent as a stream of udp packets on port 888.\n");
+    printf("\e[1mheap\e[0m\t\t: the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out\n");
+    printf("\e[1mstack\e[0m\t\t: the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out\n");
+    printf("\e[1mstdout\e[0m\t\t: the sigil is written to stdout until the program is cancelled.\n");
+    printf("\e[1mstderr\e[0m\t\t: the sigil is written to stderr instead. if stderr is piped onwards, eg to aplay, you can still use the sc interface.\n");
+    printf("\e[1mdisk <path>\e[0m\t: takes a block device as an argument, to which the sigil is written until space runs out.\n");
+    printf("\e[1mnet <addr>:<port>\e[0m\t\t\t: takes an ip address as an argument, to which the sigil is sent as a stream of udp packets on the given port.\n");
+    printf("\e[1mnetrepeat <listenport> <addr>:<port>\e[0m\t:sends the current sigil to the given address like the net chant, but also forwards on any udp data received on the listen port.\n");
+  } else if (strcmp(topic, "geomantic") == 0) {
+    printf("- geomantic signs -\n");
+    printf("the geomantic signs are part of a system of divination. they are included here because the underlying mathematics is binary. any byte can be interpreted as a pair of geomantic signs. rather than include their meanings here, you can look them up.\n");
   } else {
     printf("unrecognised help topic: %s\n", topic);
     print_general_help();
@@ -230,13 +285,13 @@ void print_help(char* topic) {
 
 void print_general_help() {
   printf("- general help -\n");
-  printf("sigil\t\t: report the current sigil\n");
-  printf("sigil <string>\t: sigilise the given string and set the current sigil accordingly\n");
-  printf("chant <type>\t: chant a sigil in the given manner\n");
-  printf("geomantic\t: interpret the current sigil as a series of four-bit geomantic symbols\n");
-  printf("end\t\t: close sc\n");
-  printf("help\t\t: print this text\n");
-  printf("help <command>\t: give more in-depth help about a specific option\n");
+  printf("\e[1msigil\e[0m\t\t: report the current sigil\n");
+  printf("\e[1msigil <string>\e[0m\t: sigilise the given string and set the current sigil accordingly\n");
+  printf("\e[1mchant <type>\e[0m\t: chant a sigil in the given manner\n");
+  printf("\e[1mgeomantic\e[0m\t: interpret the current sigil as a series of four-bit geomantic symbols\n");
+  printf("\e[1mend\e[0m\t\t: close sc\n");
+  printf("\e[1mhelp\e[0m\t\t: print this text\n");
+  printf("\e[1mhelp <command>\e[0m\t: give more in-depth help about a specific option\n");
 }
 
 // https://stackoverflow.com/questions/2661766
