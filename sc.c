@@ -63,7 +63,7 @@ int loop() {
     } else if (strncmp(command, "end", 3) == 0) {
       return 0;
     } else {
-      printf("command not recognised: %s\n", command);
+      printf("command not recognised: %s (try typing 'help')\n", command);
     }
   }
 }
