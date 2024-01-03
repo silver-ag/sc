@@ -279,13 +279,13 @@ void print_help(char* topic) {
     printf("- chant -\n");
     printf("chanting consists of the computer meditating on a sigil by repeatedly processing it.\n");
     printf("the following kinds of chant are provided:\n");
-    printf("\e[1mheap\e[0m\t\t: the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out\n");
-    printf("\e[1mstack\e[0m\t\t: the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out\n");
-    printf("\e[1mstdout\e[0m\t\t: the sigil is written to stdout until the program is cancelled.\n");
-    printf("\e[1mstderr\e[0m\t\t: the sigil is written to stderr instead. if stderr is piped onwards, eg to aplay, you can still use the sc interface.\n");
-    printf("\e[1mdisk <path>\e[0m\t: takes a block device as an argument, to which the sigil is written until space runs out.\n");
-    printf("\e[1mnet <addr>:<port>\e[0m\t\t\t: takes an ip address as an argument, to which the sigil is sent as a stream of udp packets on the given port.\n");
-    printf("\e[1mnetrepeat <listenport> <addr>:<port>\e[0m\t:sends the current sigil to the given address like the net chant, but also forwards on any udp data received on the listen port.\n");
+    printf("heap\t\t: the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out\n");
+    printf("stack\t\t: the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out\n");
+    printf("stdout\t\t: the sigil is written to stdout until the program is cancelled.\n");
+    printf("stderr\t\t: the sigil is written to stderr instead. if stderr is piped onwards, eg to aplay, you can still use the sc interface.\n");
+    printf("disk <path>\t: takes a block device as an argument, to which the sigil is written until space runs out.\n");
+    printf("net <addr>:<port>\t\t\t: takes an ip address as an argument, to which the sigil is sent as a stream of udp packets on the given port.\n");
+    printf("netrepeat <listenport> <addr>:<port>\t:sends the current sigil to the given address like the net chant, but also forwards on any udp data received on the listen port.\n");
   } else if (strcmp(topic, "geomantic") == 0) {
     printf("- geomantic signs -\n");
     printf("the geomantic signs are part of a system of divination. they are included here because the underlying mathematics is binary. any byte can be interpreted as a pair of geomantic signs. rather than include their meanings here, you can look them up.\n");
@@ -297,13 +297,13 @@ void print_help(char* topic) {
 
 void print_general_help() {
   printf("- general help -\n");
-  printf("\e[1msigil\e[0m\t\t: report the current sigil\n");
-  printf("\e[1msigil <string>\e[0m\t: sigilise the given string and set the current sigil accordingly\n");
-  printf("\e[1mchant <type>\e[0m\t: chant a sigil in the given manner\n");
-  printf("\e[1mgeomantic\e[0m\t: interpret the current sigil as a series of four-bit geomantic symbols\n");
-  printf("\e[1mend\e[0m\t\t: close sc\n");
-  printf("\e[1mhelp\e[0m\t\t: print this text\n");
-  printf("\e[1mhelp <command>\e[0m\t: give more in-depth help about a specific option\n");
+  printf("sigil\t\t: report the current sigil\n");
+  printf("sigil <string>\t: sigilise the given string and set the current sigil accordingly\n");
+  printf("chant <type>\t: chant a sigil in the given manner\n");
+  printf("geomantic\t: interpret the current sigil as a series of four-bit geomantic symbols\n");
+  printf("end\t\t: close sc\n");
+  printf("help\t\t: print this text\n");
+  printf("help <command>\t: give more in-depth help about a specific option\n");
 }
 
 // https://stackoverflow.com/questions/2661766
