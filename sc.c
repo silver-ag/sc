@@ -279,7 +279,7 @@ void print_help(char* topic) {
     printf("- chant -\n");
     printf("chanting consists of the computer meditating on a sigil by repeatedly processing it.\n");
     printf("the following kinds of chant are provided:\n");
-    printf("heap\t\t: the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out\n");
+    printf("heap\t\t: the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out. WARNING: on windows this has been known to cause a full computer reset for some fucking reason.\n");
     printf("stack\t\t: the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out\n");
     printf("stdout\t\t: the sigil is written to stdout until the program is cancelled.\n");
     printf("stderr\t\t: the sigil is written to stderr instead. if stderr is piped onwards, eg to aplay, you can still use the sc interface.\n");

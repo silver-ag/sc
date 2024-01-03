@@ -29,7 +29,7 @@ you can also view the sigil as a set of geomantic signs, two per byte.
 
 | chant | description |
 | --- | --- |
-| heap | the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out |
+| heap | the sigil is written to the heap until a moment of rupture/gnosis occurs when the heap memory runs out. **warning: on windows this has been known to cause a full computer reset, for some fucking reason** |
 | stack | the sigil is recursively written to the stack until a moment of rupture/gnosis occurs when the stack memory runs out |
 | stdout | the sigil is written to stdout until the program is cancelled. |
 | stderr | the sigil is written to stderr until the program is cancelled. this can be piped to other programs, eg aplay, without interfering with the interface. |
